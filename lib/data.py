@@ -9,6 +9,19 @@ class TrainDataLoader:
         pass
 
     def load(self, path_to_data):
-        df = pd.read_csv(path_to_data, header=None, comment="#")
+        df = pd.read_csv(path_to_data,
+                         header=None,
+                         comment="#",
+                         names =["PREV_SYSTEM_ACTION",
+                                 "TypeOrder",
+                                 "NumberPizzas",
+                                 "TypesPizzas",
+                                 "SizesPizzas",
+                                 "TypesDoughs",
+                                 "Drinks",
+                                 "Acceptance",
+                                 "Rejection",
+                                 "NotUnderstood",
+                                 "SYSTEM_ACTION"])
 
         pass
