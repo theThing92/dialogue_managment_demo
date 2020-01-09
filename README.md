@@ -23,7 +23,7 @@ Kommandozeile öffnen, dann folgende Befehle eingeben:
 
 ```
 # Wechsel in das Verzeichnis der Demo
-cd path/to/repo/word_embeddings_demo
+cd path/to/repo/dialogue_managment_demo
 ```
 
 **Linux/Mac**
