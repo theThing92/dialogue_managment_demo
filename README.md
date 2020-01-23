@@ -1,5 +1,5 @@
 # Dialogue Managment Demo
-Das vorliegende Git-Repository enthält den Beispiel-Code für das Sitzungsreferat zum Thema ***Implementing Dialog Managment*** vom 09.01.2020 im Hauptseminar "Dialogsysteme" (WS 2019/2020).
+Das vorliegende Git-Repository enthält den Beispiel-Code für das Sitzungsreferat zum Thema ***Implementing Dialog Managment*** vom 23.01.2020 im Hauptseminar "Dialogsysteme" (WS 2019/2020).
 
 ## Frameworks
 **Hinweis:** Alle gelisteten Frameworks sind für Python geschrieben im Hintergrund wird daraus jedoch - aus Performanzgründen - meist C-Code kompiliert (z.B. mit Cython).
