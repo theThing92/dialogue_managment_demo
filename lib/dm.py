@@ -56,7 +56,7 @@ class DM:
                 self.current_user_int = user_int
 
                 # update value dict
-                if user_int == "order" and any(list(slots.values())):
+                if self.current_user_int == "order" and any(list(slots.values())):
                     # update slots
                     for k,v in slots.items():
                         if v is not None:
@@ -385,6 +385,7 @@ class DM:
 
 
         elif self.type == "statistical":
+
             # need to set non-None value for PREV_SYSTEM_ACTION as no empty values are allowed
             # for predicting with a scikit-learn classifier
             if self._dialogue_registry["PREV_SYSTEM_ACTION"] == None:
@@ -394,18 +395,18 @@ class DM:
             else:
                 self._dialogue_registry["PREV_SYSTEM_ACTION"] = self._dialogue_registry["SYSTEM_ACTION"]
 
-
             prediction_system_reaction = self.stat_model.predict([list(self._dialogue_registry.values())[:-1]])[0]
             self._dialogue_registry["SYSTEM_ACTION"] = prediction_system_reaction
 
-            #if self._dialogue_registry["PREV_SYSTEM_ACTION"] != 1:
-            #    self._nlg.generate_response(self._dialogue_registry, self._slots, self.current_user_int)
+            if self._dialogue_registry["PREV_SYSTEM_ACTION"] != 1:
+                self._nlg.generate_response(self._dialogue_registry, self._slots, self.current_user_int)
 
-            self.current_user_input = input()
+            if not (self._dialogue_registry["SYSTEM_ACTION"] == 14 and self._dialogue_registry["Acceptance"] in [0, 1]):
+                self.current_user_input = input()
 
             slots, user_int = self._nlu.interpret_input(self.current_user_input)
 
-
+            self.current_user_int = user_int
 
             if self.current_user_input in ("marinara", "margherita", "barbecue", "sicilian"):
                 self._dialogue_registry["TypesPizzas"] = 1
@@ -418,48 +419,64 @@ class DM:
             self.current_user_int = user_int
 
             # update value dict
-            if user_int == "order" and any(list(slots.values())):
+            if self.current_user_int == "order" and any(list(slots.values())):
                 # update slots
                 for k, v in list(slots.items()):
-                    if self._slots[k] is not None:
+                    if self._slots[k] is None:
                         self._slots[k] = v
 
-                        # update dialogue registry
-                        if k == "pizza_quantity":
-                            self._dialogue_registry["NumberPizzas"] = 1
+                        if v is not None:
+                            # update dialogue registry
+                            if k == "pizza_quantity":
+                                self._dialogue_registry["NumberPizzas"] = 1
 
-                        elif k == "pizza_type":
-                            self._dialogue_registry["TypesPizzas"] = 1
+                            elif k == "pizza_type":
+                                self._dialogue_registry["TypesPizzas"] = 1
 
-                        elif k == "pizza_size":
-                            self._dialogue_registry["SizesPizzas"] = 1
+                            elif k == "pizza_size":
+                                self._dialogue_registry["SizesPizzas"] = 1
 
-            if all(list(self._slots.values())) and\
+            if all(list(self._slots.values())) and \
                     self._dialogue_registry["NumberPizzas"] == 1 and \
                     self._dialogue_registry["TypesPizzas"] == 1 and \
                     self._dialogue_registry["SizesPizzas"] == 1 and \
                     self._dialogue_registry["SYSTEM_ACTION"] != 14:
-                self._dialogue_registry["NotUnderstood"] == 0
+                self._dialogue_registry["NotUnderstood"] = 0
                 # manual set of system action because of lack of training examples
-                self._dialogue_registry["SYSTEM_ACTION"] == 14
+                self._dialogue_registry["SYSTEM_ACTION"] = 14
 
-            elif user_int == "help":
-                self._nlg.generate_response(self._dialogue_registry, self._slots, self.current_user_int)
+                return True
+
+            if all(list(self._slots.values())) and \
+                    self._dialogue_registry["NumberPizzas"] == 1 and \
+                    self._dialogue_registry["TypesPizzas"] == 1 and \
+                    self._dialogue_registry["SizesPizzas"] == 1 and \
+                    self._dialogue_registry["SYSTEM_ACTION"] == 14 and \
+                    self._dialogue_registry["NotUnderstood"] == 0:
+
+                return False
+
+            elif self.current_user_int == "help":
+
+                return True
 
             elif user_int == None:
                 self._dialogue_registry["NotUnderstood"] == 1
-                self._nlg.generate_response(self._dialogue_registry, self._slots, self.current_user_int)
+
+                return True
 
 
             elif self.current_user_int == "rejection":
                 self._dialogue_registry["Acceptance"] = 0
                 self._dialogue_registry["Rejection"] = 1
 
+                return True
 
-            if self.current_user_int == "acceptance" and \
-                    self._dialogue_registry["Acceptance"] == 1 and \
-                    self._dialogue_registry["Rejection"] == 0 and \
-                    self._dialogue_registry["SYSTEM_ACTION"] == 14:
+
+            elif self.current_user_int == "acceptance":
+                self._dialogue_registry["Acceptance"] = 1
+                self._dialogue_registry["Rejection"] = 0
+
                 return False
 
             else:
@@ -467,25 +484,22 @@ class DM:
                 return True
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
 
     # hard-coded
+    print("### Using hard-coded model for inference of system actions ###")
     dm1 = DM("hard-coded")
 
     flag = True
     while flag:
         flag = dm1.evaluate_turn()
 
-    # statistical (model predicts only 3. weird error)
-    #dm2 = DM("statistical")
-    #flag = True
-    #while flag:
-    #    flag = dm2.evaluate_turn()
+    # statistical
+    print("### Using statistical model for inference of system actions ###")
+    dm2 = DM("statistical")
+
+    flag = True
+    while flag:
+        flag = dm2.evaluate_turn()
 
 

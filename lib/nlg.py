@@ -75,7 +75,7 @@ class NLG:
             print(self._templates.confirmation_order.value.format(slots["pizza_quantity"],slots["pizza_size"],slots["pizza_type"]))
 
         # get quantity help
-        if dialogue_registry["PREV_SYSTEM_ACTION"] == 3 and user_int == "help":
+        elif dialogue_registry["PREV_SYSTEM_ACTION"] == 3 and user_int == "help":
             print(self._templates.help_quantity_context.value)
 
         # get type help

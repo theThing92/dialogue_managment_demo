@@ -2,12 +2,14 @@
 Module to store, load an preprocess (training) data.
 """
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 # load training data
 class TrainDataLoader:
-    def __init__(self, path_to_data="../data/Dialogs_Pizza.txt"):
+    def __init__(self, path_to_data="./data/Dialogs_Pizza.txt"):
         self.path_to_data = path_to_data
         self.data = self.load()
+        self.label_encoder = LabelEncoder()
 
     def load(self):
         df = pd.read_csv(self.path_to_data,

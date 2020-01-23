@@ -30,10 +30,6 @@ class NLU:
         """
         source:
         https://stackoverflow.com/questions/493174/is-there-a-way-to-convert-number-words-to-integers
-
-        :param textnum:
-        :param numwords:
-        :return:
         """
         if not numwords:
             units = [
